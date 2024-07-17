@@ -83,7 +83,7 @@ class MyAppState extends State<MyApp> {
       return '''
 Produktname: ${productData['product_name'] ?? 'N/A'}
 Menge: ${productData['quantity'] ?? 'N/A'}
-Nuri-Score: ${(productData['nutrition_grades_tags'] != null ? productData['nutrition_grades_tags'][0].toUpperCase() : 'N/A')}
+Nutri-Score: ${(productData['nutrition_grades_tags'] != null ? productData['nutrition_grades_tags'][0].toUpperCase() : 'N/A')}
 Zutaten: ${productData['ingredients_text'] ?? 'N/A'}
 ''';
     } else {
@@ -257,7 +257,12 @@ Zutaten: ${productData['ingredients_text'] ?? 'N/A'}
       _boldSpan('Menge: '),
       TextSpan(text: '${productData['quantity'] ?? 'N/A'}\n'),
       _boldSpan('Nutri-Score: '),
-      TextSpan(text: '${(productData['nutrition_grades_tags'] != null ? productData['nutrition_grades_tags'][0].toUpperCase() : 'N/A')}\n'),
+      TextSpan(
+        text: '${(productData['nutrition_grades_tags'] != null ? productData['nutrition_grades_tags'][0].toUpperCase() : 'N/A')}\n',
+        style: TextStyle(
+          color: _getNutriScoreColor(productData['nutrition_grades_tags'] != null ? productData['nutrition_grades_tags'][0].toUpperCase() : 'N/A'),
+        ),
+      ),
       _boldSpan('Zutaten: '),
       TextSpan(text: '${productData['ingredients_text'] ?? 'N/A'}\n'),
     ];
@@ -268,6 +273,23 @@ Zutaten: ${productData['ingredients_text'] ?? 'N/A'}
       text: text,
       style: const TextStyle(fontWeight: FontWeight.bold),
     );
+  }
+
+  Color _getNutriScoreColor(String grade) {
+    switch (grade) {
+      case 'A':
+        return Colors.green[800]!;
+      case 'B':
+        return Colors.green[400]!;
+      case 'C':
+        return Colors.yellow[600]!;
+      case 'D':
+        return Colors.orange[700]!;
+      case 'E':
+        return Colors.red;
+      default:
+        return Colors.black;
+    }
   }
 
 Widget _buildNutritionTable() {
