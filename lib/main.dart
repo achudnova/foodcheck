@@ -153,77 +153,94 @@ Ingredients: ${productData['ingredients_text'] ?? 'N/A'}
     });
   }
 
+  void _resetOutput() {
+    setState(() {
+      scanResult = "";
+      productInfo = "";
+      productImage = "";
+      currentProduct = null;
+      _barcodeController.clear();
+    });
+  }
+
   bool _isFavorite(Map<String, dynamic> product) {
     return _favorites.any((item) => item['code'] == product['code']);
   }
 
   Widget _buildHome() {
-    return Stack(
-      children: [
-        SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              TextField(
-                controller: _barcodeController,
-                decoration: InputDecoration(
-                  labelText: 'Enter barcode',
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: () {
-                      fetchProductDetails(_barcodeController.text);
-                    },
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _barcodeController,
+                    decoration: InputDecoration(
+                      labelText: 'Enter barcode',
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: () {
+                          fetchProductDetails(_barcodeController.text);
+                        },
+                      ),
+                    ),
+                    keyboardType: TextInputType.number,
                   ),
                 ),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 20),
+                if (currentProduct != null)
+                  IconButton(
+                    icon: Icon(
+                      _isFavorite(currentProduct!)
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                    ),
+                    color: _isFavorite(currentProduct!) ? Colors.red : Colors.black,
+                    onPressed: () {
+                      if (_isFavorite(currentProduct!)) {
+                        _removeFromFavorites(currentProduct!);
+                      } else {
+                        _addToFavorites();
+                      }
+                    },
+                  ),
+              ],
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
               ElevatedButton(
                 onPressed: scanCode,
                 child: const Text('Start barcode scan!'),
               ),
-              const SizedBox(height: 20),
-              if (productImage.isNotEmpty)
-                Center(child: Image.network(productImage)),
-              const SizedBox(height: 20),
-              if (productInfo.isNotEmpty)
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text.rich(
-                    TextSpan(
-                      style: const TextStyle(fontSize: 16),
-                      children: _formatProductInfoSpans(),
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
+              ElevatedButton(
+                onPressed: _resetOutput,
+                child: const Text('Reset'),
+              ),
             ],
           ),
-        ),
-        if (currentProduct != null)
-          Align(
-            alignment: Alignment.topRight,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: IconButton(
-                icon: Icon(
-                  _isFavorite(currentProduct!)
-                      ? Icons.favorite
-                      : Icons.favorite_border,
+          const SizedBox(height: 20),
+          if (productImage.isNotEmpty)
+            Center(child: Image.network(productImage)),
+          const SizedBox(height: 20),
+          if (productInfo.isNotEmpty)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text.rich(
+                TextSpan(
+                  style: const TextStyle(fontSize: 16),
+                  children: _formatProductInfoSpans(),
                 ),
-                color: _isFavorite(currentProduct!) ? Colors.red : Colors.black,
-                onPressed: () {
-                  if (_isFavorite(currentProduct!)) {
-                    _removeFromFavorites(currentProduct!);
-                  } else {
-                    _addToFavorites();
-                  }
-                },
+                textAlign: TextAlign.left,
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -290,7 +307,7 @@ Ingredients: ${productData['ingredients_text'] ?? 'N/A'}
             ),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: Colors.amber[800],
+          selectedItemColor: const Color.fromARGB(255, 145, 91, 166),
           onTap: _onItemTapped,
         ),
       ),
