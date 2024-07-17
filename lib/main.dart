@@ -110,6 +110,13 @@ class MyAppState extends State<MyApp> {
     }
   }
 
+  Future<void> _deleteFromFavorites(int index) async {
+    setState(() {
+      _favorites.removeAt(index);
+    });
+    await _saveFavorites();
+  }
+
   Future<void> _saveFavorites() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> favoriteStrings = _favorites.map((item) => jsonEncode(item)).toList();
@@ -170,6 +177,11 @@ class MyAppState extends State<MyApp> {
           leading: product['image_url'] != null
               ? Image.network(product['image_url'], width: 50, height: 50)
               : null,
+          trailing: IconButton(
+            icon: const Icon(Icons.delete),
+            color: Colors.red,
+            onPressed: () => _deleteFromFavorites(index),
+          ),
         );
       },
     );
