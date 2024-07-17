@@ -133,36 +133,55 @@ class MyAppState extends State<MyApp> {
     }
   }
 
+  void _showProductDetails(Map<String, dynamic> product) {
+    setState(() {
+      productInfo = _formatProductInfo({'status': 1, 'product': product});
+      productImage = product['image_url'] ?? '';
+      currentProduct = product;
+      _selectedIndex = 0;
+    });
+  }
+
   Widget _buildHome() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          ElevatedButton(
-            onPressed: scanCode,
-            child: const Text('Start barcode scan!'),
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: scanCode,
+                child: const Text('Start barcode scan!'),
+              ),
+              const SizedBox(height: 20),
+              if (productImage.isNotEmpty)
+                Image.network(productImage),
+              const SizedBox(height: 20),
+              SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Text(
+                  productInfo,
+                  style: const TextStyle(fontSize: 16),
+                  textAlign: TextAlign.left,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 20),
-          if (productImage.isNotEmpty)
-            Image.network(productImage),
-          const SizedBox(height: 20),
-          SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Text(
-              productInfo,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.left,
+        ),
+        if (currentProduct != null)
+          Align(
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: IconButton(
+                icon: const Icon(Icons.favorite),
+                color: Colors.red,
+                onPressed: _addToFavorites,
+              ),
             ),
           ),
-          if (currentProduct != null)
-            IconButton(
-              icon: const Icon(Icons.favorite),
-              color: Colors.red,
-              onPressed: _addToFavorites,
-            ),
-        ],
-      ),
+      ],
     );
   }
 
@@ -182,6 +201,7 @@ class MyAppState extends State<MyApp> {
             color: Colors.red,
             onPressed: () => _deleteFromFavorites(index),
           ),
+          onTap: () => _showProductDetails(product),
         );
       },
     );
