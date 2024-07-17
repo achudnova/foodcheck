@@ -56,8 +56,8 @@ class MyAppState extends State<MyApp> {
   }
 
   Future<void> fetchProductDetails(String barcode) async {
-    final response = await http.get(
-        Uri.parse('https://world.openfoodfacts.org/api/v0/product/$barcode.json'));
+    final response = await http.get(Uri.parse(
+        'https://world.openfoodfacts.org/api/v0/product/$barcode.json'));
 
     if (response.statusCode == 200) {
       final product = jsonDecode(response.body);
@@ -68,7 +68,8 @@ class MyAppState extends State<MyApp> {
       });
     } else {
       setState(() {
-        productInfo = 'Product not found or unable to fetch the product information.';
+        productInfo =
+            'Product not found or unable to fetch the product information.';
         productImage = '';
         currentProduct = null;
       });
@@ -79,14 +80,11 @@ class MyAppState extends State<MyApp> {
     if (product['status'] == 1) {
       final productData = product['product'];
       return '''
-      Product Name: ${productData['product_name'] ?? 'N/A'}
-      Brand: ${productData['brands'] ?? 'N/A'}
-      Quantity: ${productData['quantity'] ?? 'N/A'}
-      Ingredients: ${productData['ingredients_text'] ?? 'N/A'}
-      Nutrition Grade: ${productData['nutrition_grades_tags'] != null ? productData['nutrition_grades_tags'][0] : 'N/A'}
-      Categories: ${productData['categories_tags'] ?? 'N/A'}
-      URL: ${productData['url'] ?? 'N/A'}
-      ''';
+Product Name: ${productData['product_name'] ?? 'N/A'}
+Quantity: ${productData['quantity'] ?? 'N/A'}
+Nutrition Grade: ${(productData['nutrition_grades_tags'] != null ? productData['nutrition_grades_tags'][0].toUpperCase() : 'N/A')}
+Ingredients: ${productData['ingredients_text'] ?? 'N/A'}
+''';
     } else {
       return 'Product not found or unable to fetch the product information.';
     }
@@ -126,7 +124,8 @@ class MyAppState extends State<MyApp> {
 
   Future<void> _saveFavorites() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> favoriteStrings = _favorites.map((item) => jsonEncode(item)).toList();
+    List<String> favoriteStrings =
+        _favorites.map((item) => jsonEncode(item)).toList();
     await prefs.setStringList('favorites', favoriteStrings);
   }
 
@@ -135,7 +134,10 @@ class MyAppState extends State<MyApp> {
     List<String>? favoriteStrings = prefs.getStringList('favorites');
     if (favoriteStrings != null) {
       setState(() {
-        _favorites = favoriteStrings.map((item) => jsonDecode(item)).toList().cast<Map<String, dynamic>>();
+        _favorites = favoriteStrings
+            .map((item) => jsonDecode(item))
+            .toList()
+            .cast<Map<String, dynamic>>();
       });
     }
   }
@@ -167,13 +169,15 @@ class MyAppState extends State<MyApp> {
               ),
               const SizedBox(height: 20),
               if (productImage.isNotEmpty)
-                Image.network(productImage),
+                Center(child: Image.network(productImage)),
               const SizedBox(height: 20),
-              SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Text(
-                  productInfo,
-                  style: const TextStyle(fontSize: 16),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text.rich(
+                  TextSpan(
+                    style: const TextStyle(fontSize: 16),
+                    children: _formatProductInfoSpans(),
+                  ),
                   textAlign: TextAlign.left,
                 ),
               ),
@@ -187,7 +191,9 @@ class MyAppState extends State<MyApp> {
               padding: const EdgeInsets.all(16.0),
               child: IconButton(
                 icon: Icon(
-                  _isFavorite(currentProduct!) ? Icons.favorite : Icons.favorite_border,
+                  _isFavorite(currentProduct!)
+                      ? Icons.favorite
+                      : Icons.favorite_border,
                 ),
                 color: _isFavorite(currentProduct!) ? Colors.red : Colors.black,
                 onPressed: () {
@@ -204,6 +210,27 @@ class MyAppState extends State<MyApp> {
     );
   }
 
+  List<TextSpan> _formatProductInfoSpans() {
+    final productData = currentProduct ?? {};
+    return [
+      _boldSpan('Product Name: '),
+      TextSpan(text: '${productData['product_name'] ?? 'N/A'}\n'),
+      _boldSpan('Quantity: '),
+      TextSpan(text: '${productData['quantity'] ?? 'N/A'}\n'),
+      _boldSpan('Nutrition Grade: '),
+      TextSpan(text: '${(productData['nutrition_grades_tags'] != null ? productData['nutrition_grades_tags'][0].toUpperCase() : 'N/A')}\n'),
+      _boldSpan('Ingredients: '),
+      TextSpan(text: '${productData['ingredients_text'] ?? 'N/A'}\n'),
+    ];
+  }
+
+  TextSpan _boldSpan(String text) {
+    return TextSpan(
+      text: text,
+      style: const TextStyle(fontWeight: FontWeight.bold),
+    );
+  }
+
   Widget _buildFavorites() {
     return ListView.builder(
       itemCount: _favorites.length,
@@ -211,7 +238,6 @@ class MyAppState extends State<MyApp> {
         final product = _favorites[index];
         return ListTile(
           title: Text(product['product_name'] ?? 'N/A'),
-          subtitle: Text(product['brands'] ?? 'N/A'),
           leading: product['image_url'] != null
               ? Image.network(product['image_url'], width: 50, height: 50)
               : null,
@@ -232,6 +258,7 @@ class MyAppState extends State<MyApp> {
       home: Scaffold(
         appBar: AppBar(
           title: const Text('FoodInfo Finder'),
+          elevation: 20,
         ),
         body: _selectedIndex == 0 ? _buildHome() : _buildFavorites(),
         bottomNavigationBar: BottomNavigationBar(
