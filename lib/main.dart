@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(const MyApp());
 
@@ -15,11 +16,17 @@ class MyApp extends StatefulWidget {
 
 class MyAppState extends State<MyApp> {
   int _selectedIndex = 0;
-  final List<Map<String, dynamic>> _favorites = [];
+  List<Map<String, dynamic>> _favorites = [];
   String scanResult = "";
   String productInfo = "";
   String productImage = "";
   Map<String, dynamic>? currentProduct;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavorites();
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -94,10 +101,27 @@ class MyAppState extends State<MyApp> {
     }
   }
 
-  void _addToFavorites() {
+  Future<void> _addToFavorites() async {
     if (currentProduct != null) {
       setState(() {
         _favorites.add(currentProduct!);
+      });
+      await _saveFavorites();
+    }
+  }
+
+  Future<void> _saveFavorites() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> favoriteStrings = _favorites.map((item) => jsonEncode(item)).toList();
+    await prefs.setStringList('favorites', favoriteStrings);
+  }
+
+  Future<void> _loadFavorites() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? favoriteStrings = prefs.getStringList('favorites');
+    if (favoriteStrings != null) {
+      setState(() {
+        _favorites = favoriteStrings.map((item) => jsonDecode(item)).toList().cast<Map<String, dynamic>>();
       });
     }
   }
