@@ -14,13 +14,17 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
+  int _selectedIndex = 0;
+  final List<Map<String, dynamic>> _favorites = [];
   String scanResult = "";
   String productInfo = "";
   String productImage = "";
+  Map<String, dynamic>? currentProduct;
 
-  @override
-  void initState() {
-    super.initState();
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   Future<void> scanCode() async {
@@ -53,11 +57,13 @@ class MyAppState extends State<MyApp> {
       setState(() {
         productInfo = _formatProductInfo(product);
         productImage = _getProductImage(product);
+        currentProduct = product['product'];
       });
     } else {
       setState(() {
         productInfo = 'Product not found or unable to fetch the product information.';
         productImage = '';
+        currentProduct = null;
       });
     }
   }
@@ -88,6 +94,63 @@ class MyAppState extends State<MyApp> {
     }
   }
 
+  void _addToFavorites() {
+    if (currentProduct != null) {
+      setState(() {
+        _favorites.add(currentProduct!);
+      });
+    }
+  }
+
+  Widget _buildHome() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          ElevatedButton(
+            onPressed: scanCode,
+            child: const Text('Start barcode scan!'),
+          ),
+          const SizedBox(height: 20),
+          if (productImage.isNotEmpty)
+            Image.network(productImage),
+          const SizedBox(height: 20),
+          SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Text(
+              productInfo,
+              style: const TextStyle(fontSize: 16),
+              textAlign: TextAlign.left,
+            ),
+          ),
+          if (currentProduct != null)
+            IconButton(
+              icon: const Icon(Icons.favorite),
+              color: Colors.red,
+              onPressed: _addToFavorites,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFavorites() {
+    return ListView.builder(
+      itemCount: _favorites.length,
+      itemBuilder: (context, index) {
+        final product = _favorites[index];
+        return ListTile(
+          title: Text(product['product_name'] ?? 'N/A'),
+          subtitle: Text(product['brands'] ?? 'N/A'),
+          leading: product['image_url'] != null
+              ? Image.network(product['image_url'], width: 50, height: 50)
+              : null,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -95,34 +158,22 @@ class MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('FoodInfo Finder'),
         ),
-        body: Builder(builder: (BuildContext context) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: () {
-                    scanCode();
-                  },
-                  child: const Text('Start barcode scan!'),
-                ),
-                const SizedBox(height: 20),
-                if (productImage.isNotEmpty)
-                  Image.network(productImage),
-                const SizedBox(height: 20),
-                SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Text(
-                    productInfo,
-                    style: const TextStyle(fontSize: 16),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-              ],
+        body: _selectedIndex == 0 ? _buildHome() : _buildFavorites(),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
             ),
-          );
-        }),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.favorite),
+              label: 'Favorites',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.amber[800],
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }
