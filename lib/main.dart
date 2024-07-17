@@ -288,19 +288,19 @@ Widget _buildNutritionTable() {
         children: [
           TableRow(children: [
             _buildTableCell('Kalorien'),
-            _buildTableCell('${productData['nutriments']?['energy-kcal_100g'] ?? 'N/A'}'),
+            _buildTableCell('${productData['nutriments']?['energy-kcal_100g'] ?? 'N/A'} kcal'),
           ]),
           TableRow(children: [
             _buildTableCell('Fett'),
-            _buildTableCell('${productData['nutriments']?['fat_100g'] ?? 'N/A'}'),
+            _buildTableCell('${productData['nutriments']?['fat_100g'] ?? 'N/A'} g'),
           ]),
           TableRow(children: [
             _buildTableCell('Zucker'),
-            _buildTableCell('${productData['nutriments']?['sugars_100g'] ?? 'N/A'}'),
+            _buildTableCell('${productData['nutriments']?['sugars_100g'] ?? 'N/A'} g'),
           ]),
           TableRow(children: [
             _buildTableCell('Proteine'),
-            _buildTableCell('${productData['nutriments']?['proteins_100g'] ?? 'N/A'}'),
+            _buildTableCell('${productData['nutriments']?['proteins_100g'] ?? 'N/A'} g'),
           ]),
         ],
       ),
