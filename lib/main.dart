@@ -102,7 +102,7 @@ class MyAppState extends State<MyApp> {
   }
 
   Future<void> _addToFavorites() async {
-    if (currentProduct != null) {
+    if (currentProduct != null && !_isFavorite(currentProduct!)) {
       setState(() {
         _favorites.add(currentProduct!);
       });
@@ -113,6 +113,13 @@ class MyAppState extends State<MyApp> {
   Future<void> _deleteFromFavorites(int index) async {
     setState(() {
       _favorites.removeAt(index);
+    });
+    await _saveFavorites();
+  }
+
+  Future<void> _removeFromFavorites(Map<String, dynamic> product) async {
+    setState(() {
+      _favorites.removeWhere((item) => item['code'] == product['code']);
     });
     await _saveFavorites();
   }
@@ -140,6 +147,10 @@ class MyAppState extends State<MyApp> {
       currentProduct = product;
       _selectedIndex = 0;
     });
+  }
+
+  bool _isFavorite(Map<String, dynamic> product) {
+    return _favorites.any((item) => item['code'] == product['code']);
   }
 
   Widget _buildHome() {
@@ -175,9 +186,17 @@ class MyAppState extends State<MyApp> {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: IconButton(
-                icon: const Icon(Icons.favorite),
-                color: Colors.red,
-                onPressed: _addToFavorites,
+                icon: Icon(
+                  _isFavorite(currentProduct!) ? Icons.favorite : Icons.favorite_border,
+                ),
+                color: _isFavorite(currentProduct!) ? Colors.red : Colors.black,
+                onPressed: () {
+                  if (_isFavorite(currentProduct!)) {
+                    _removeFromFavorites(currentProduct!);
+                  } else {
+                    _addToFavorites();
+                  }
+                },
               ),
             ),
           ),
