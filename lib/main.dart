@@ -21,6 +21,7 @@ class MyAppState extends State<MyApp> {
   String productInfo = "";
   String productImage = "";
   Map<String, dynamic>? currentProduct;
+  final TextEditingController _barcodeController = TextEditingController();
 
   @override
   void initState() {
@@ -48,6 +49,7 @@ class MyAppState extends State<MyApp> {
 
     setState(() {
       scanResult = barcodeScanRes;
+      _barcodeController.text = barcodeScanRes;
     });
 
     if (barcodeScanRes != '-1') {
@@ -163,6 +165,20 @@ Ingredients: ${productData['ingredients_text'] ?? 'N/A'}
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              TextField(
+                controller: _barcodeController,
+                decoration: InputDecoration(
+                  labelText: 'Enter barcode',
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.search),
+                    onPressed: () {
+                      fetchProductDetails(_barcodeController.text);
+                    },
+                  ),
+                ),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: scanCode,
                 child: const Text('Start barcode scan!'),
@@ -171,16 +187,17 @@ Ingredients: ${productData['ingredients_text'] ?? 'N/A'}
               if (productImage.isNotEmpty)
                 Center(child: Image.network(productImage)),
               const SizedBox(height: 20),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text.rich(
-                  TextSpan(
-                    style: const TextStyle(fontSize: 16),
-                    children: _formatProductInfoSpans(),
+              if (productInfo.isNotEmpty)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text.rich(
+                    TextSpan(
+                      style: const TextStyle(fontSize: 16),
+                      children: _formatProductInfoSpans(),
+                    ),
+                    textAlign: TextAlign.left,
                   ),
-                  textAlign: TextAlign.left,
                 ),
-              ),
             ],
           ),
         ),
