@@ -225,7 +225,6 @@ Ingredients: ${productData['ingredients_text'] ?? 'N/A'}
             ],
           ),
           const SizedBox(height: 20),
-          const SizedBox(height: 40), // Add some space before the product info
           if (productImage.isNotEmpty)
             Center(child: Image.network(productImage)),
           const SizedBox(height: 20),
@@ -308,23 +307,26 @@ Ingredients: ${productData['ingredients_text'] ?? 'N/A'}
   }
 
   Widget _buildFavorites() {
-    return ListView.builder(
-      itemCount: _favorites.length,
-      itemBuilder: (context, index) {
-        final product = _favorites[index];
-        return ListTile(
-          title: Text(product['product_name'] ?? 'N/A'),
-          leading: product['image_url'] != null
-              ? Image.network(product['image_url'], width: 50, height: 50)
-              : null,
-          trailing: IconButton(
-            icon: const Icon(Icons.delete),
-            color: Colors.red,
-            onPressed: () => _deleteFromFavorites(index),
-          ),
-          onTap: () => _showProductDetails(product),
-        );
-      },
+    return Padding(
+      padding: const EdgeInsets.only(top: 20.0), // Adjust the padding value as needed
+      child: ListView.builder(
+        itemCount: _favorites.length,
+        itemBuilder: (context, index) {
+          final product = _favorites[index];
+          return ListTile(
+            title: Text(product['product_name'] ?? 'N/A'),
+            leading: product['image_url'] != null
+                ? Image.network(product['image_url'], width: 50, height: 50)
+                : null,
+            trailing: IconButton(
+              icon: const Icon(Icons.delete),
+              color: Colors.red,
+              onPressed: () => _deleteFromFavorites(index),
+            ),
+            onTap: () => _showProductDetails(product),
+          );
+        },
+      ),
     );
   }
 
@@ -349,7 +351,7 @@ Ingredients: ${productData['ingredients_text'] ?? 'N/A'}
             ),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: Colors.amber[800],
+          selectedItemColor: const Color.fromARGB(255, 137, 88, 161),
           onTap: _onItemTapped,
         ),
       ),
