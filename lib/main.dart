@@ -47,12 +47,11 @@ class MyAppState extends State<MyApp> {
 
     if (!mounted) return;
 
-    setState(() {
-      scanResult = barcodeScanRes;
-      _barcodeController.text = barcodeScanRes;
-    });
-
     if (barcodeScanRes != '-1') {
+      setState(() {
+        scanResult = barcodeScanRes;
+        _barcodeController.text = barcodeScanRes;
+      });
       fetchProductDetails(barcodeScanRes);
     }
   }
@@ -84,7 +83,7 @@ class MyAppState extends State<MyApp> {
       return '''
 Produktname: ${productData['product_name'] ?? 'N/A'}
 Menge: ${productData['quantity'] ?? 'N/A'}
-Nutri-Score: ${(productData['nutrition_grades_tags'] != null ? productData['nutrition_grades_tags'][0].toUpperCase() : 'N/A')}
+Nährwertkennzeichnung: ${(productData['nutrition_grades_tags'] != null ? productData['nutrition_grades_tags'][0].toUpperCase() : 'N/A')}
 Zutaten: ${productData['ingredients_text'] ?? 'N/A'}
 ''';
     } else {
@@ -257,7 +256,7 @@ Zutaten: ${productData['ingredients_text'] ?? 'N/A'}
       TextSpan(text: '${productData['product_name'] ?? 'N/A'}\n'),
       _boldSpan('Menge: '),
       TextSpan(text: '${productData['quantity'] ?? 'N/A'}\n'),
-      _boldSpan('Nutri-Score: '),
+      _boldSpan('Nährwertkennzeichnung: '),
       TextSpan(text: '${(productData['nutrition_grades_tags'] != null ? productData['nutrition_grades_tags'][0].toUpperCase() : 'N/A')}\n'),
       _boldSpan('Zutaten: '),
       TextSpan(text: '${productData['ingredients_text'] ?? 'N/A'}\n'),
