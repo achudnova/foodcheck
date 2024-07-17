@@ -241,7 +241,7 @@ Ingredients: ${productData['ingredients_text'] ?? 'N/A'}
                     textAlign: TextAlign.left,
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 _buildNutritionTable(),
               ],
             ),
@@ -271,30 +271,42 @@ Ingredients: ${productData['ingredients_text'] ?? 'N/A'}
     );
   }
 
-  Widget _buildNutritionTable() {
-    final productData = currentProduct ?? {};
-    return Table(
-      border: TableBorder.all(),
-      children: [
-        TableRow(children: [
-          _buildTableCell('Kalorien'),
-          _buildTableCell('${productData['nutriments']?['energy-kcal_100g'] ?? 'N/A'}'),
-        ]),
-        TableRow(children: [
-          _buildTableCell('Fett'),
-          _buildTableCell('${productData['nutriments']?['fat_100g'] ?? 'N/A'}'),
-        ]),
-        TableRow(children: [
-          _buildTableCell('Zucker'),
-          _buildTableCell('${productData['nutriments']?['sugars_100g'] ?? 'N/A'}'),
-        ]),
-        TableRow(children: [
-          _buildTableCell('Proteine'),
-          _buildTableCell('${productData['nutriments']?['proteins_100g'] ?? 'N/A'}'),
-        ]),
-      ],
-    );
-  }
+Widget _buildNutritionTable() {
+  final productData = currentProduct ?? {};
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Padding(
+        padding: EdgeInsets.only(bottom: 6.0),
+        child: Text(
+          'Nährwerte',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ),
+      Table(
+        border: TableBorder.all(),
+        children: [
+          TableRow(children: [
+            _buildTableCell('Kalorien'),
+            _buildTableCell('${productData['nutriments']?['energy-kcal_100g'] ?? 'N/A'}'),
+          ]),
+          TableRow(children: [
+            _buildTableCell('Fett'),
+            _buildTableCell('${productData['nutriments']?['fat_100g'] ?? 'N/A'}'),
+          ]),
+          TableRow(children: [
+            _buildTableCell('Zucker'),
+            _buildTableCell('${productData['nutriments']?['sugars_100g'] ?? 'N/A'}'),
+          ]),
+          TableRow(children: [
+            _buildTableCell('Proteine'),
+            _buildTableCell('${productData['nutriments']?['proteins_100g'] ?? 'N/A'}'),
+          ]),
+        ],
+      ),
+    ],
+  );
+}
 
   Widget _buildTableCell(String text) {
     return Padding(
@@ -335,7 +347,8 @@ Ingredients: ${productData['ingredients_text'] ?? 'N/A'}
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('FoodInfo Finder'),
+          title: const Text('FoodInfo Finder', style: TextStyle(color: Color.fromARGB(255, 255, 255, 255),),),
+          backgroundColor: const Color.fromARGB(255, 105, 72, 129),
           elevation: 20,
         ),
         body: _selectedIndex == 0 ? _buildHome() : _buildFavorites(),
