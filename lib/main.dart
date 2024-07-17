@@ -40,9 +40,9 @@ class MyAppState extends State<MyApp> {
 
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          "#ff6666", "Cancel", true, ScanMode.BARCODE);
+          "#ff6666", "Abbrechen", true, ScanMode.BARCODE);
     } on PlatformException {
-      barcodeScanRes = "Failed to scan";
+      barcodeScanRes = "Fehler beim Scannen";
     }
 
     if (!mounted) return;
@@ -71,7 +71,7 @@ class MyAppState extends State<MyApp> {
     } else {
       setState(() {
         productInfo =
-            'Product not found or unable to fetch the product information.';
+            'Produkt nicht gefunden oder konnte die Produktinformationen nicht abrufen.';
         productImage = '';
         currentProduct = null;
       });
@@ -82,13 +82,13 @@ class MyAppState extends State<MyApp> {
     if (product['status'] == 1) {
       final productData = product['product'];
       return '''
-Product Name: ${productData['product_name'] ?? 'N/A'}
-Quantity: ${productData['quantity'] ?? 'N/A'}
-Nutrition Grade: ${(productData['nutrition_grades_tags'] != null ? productData['nutrition_grades_tags'][0].toUpperCase() : 'N/A')}
-Ingredients: ${productData['ingredients_text'] ?? 'N/A'}
+Produktname: ${productData['product_name'] ?? 'N/A'}
+Menge: ${productData['quantity'] ?? 'N/A'}
+Nutri-Score: ${(productData['nutrition_grades_tags'] != null ? productData['nutrition_grades_tags'][0].toUpperCase() : 'N/A')}
+Zutaten: ${productData['ingredients_text'] ?? 'N/A'}
 ''';
     } else {
-      return 'Product not found or unable to fetch the product information.';
+      return 'Produkt nicht gefunden oder konnte die Produktinformationen nicht abrufen.';
     }
   }
 
@@ -181,7 +181,7 @@ Ingredients: ${productData['ingredients_text'] ?? 'N/A'}
                   child: TextField(
                     controller: _barcodeController,
                     decoration: InputDecoration(
-                      labelText: 'Enter barcode',
+                      labelText: 'Barcode eingeben',
                       suffixIcon: IconButton(
                         icon: const Icon(Icons.search),
                         onPressed: () {
@@ -216,11 +216,11 @@ Ingredients: ${productData['ingredients_text'] ?? 'N/A'}
             children: [
               ElevatedButton(
                 onPressed: scanCode,
-                child: const Text('Start barcode scan!'),
+                child: const Text('Barcode-Scan starten!'),
               ),
               ElevatedButton(
                 onPressed: _resetOutput,
-                child: const Text('Reset'),
+                child: const Text('Zurücksetzen'),
               ),
             ],
           ),
@@ -253,13 +253,13 @@ Ingredients: ${productData['ingredients_text'] ?? 'N/A'}
   List<TextSpan> _formatProductInfoSpans() {
     final productData = currentProduct ?? {};
     return [
-      _boldSpan('Product Name: '),
+      _boldSpan('Produktname: '),
       TextSpan(text: '${productData['product_name'] ?? 'N/A'}\n'),
-      _boldSpan('Quantity: '),
+      _boldSpan('Menge: '),
       TextSpan(text: '${productData['quantity'] ?? 'N/A'}\n'),
-      _boldSpan('Nutrition Grade: '),
+      _boldSpan('Nutri-Score: '),
       TextSpan(text: '${(productData['nutrition_grades_tags'] != null ? productData['nutrition_grades_tags'][0].toUpperCase() : 'N/A')}\n'),
-      _boldSpan('Ingredients: '),
+      _boldSpan('Zutaten: '),
       TextSpan(text: '${productData['ingredients_text'] ?? 'N/A'}\n'),
     ];
   }
@@ -356,11 +356,11 @@ Widget _buildNutritionTable() {
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
-              label: 'Home',
+              label: 'Startseite',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.favorite),
-              label: 'Favorites',
+              label: 'Favoriten',
             ),
           ],
           currentIndex: _selectedIndex,
